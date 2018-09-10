@@ -1,0 +1,25 @@
+---
+    - name: create instance profile
+      become: no
+      local_action: >
+        shell {{ role_path }}/files/create_empty_instance_profile.sh
+        {{ lookup('env', 'AWS_PROFILE') | default('default', true) }}
+        {{ aws_role_name }} {{ instance_profile_name }}
+      register: profile_result
+
+    - debug:
+        var: profile_result
+
+
+    - name: create and add policies to instance profile
+      become: no
+      local_action: >
+        shell {{ role_path }}/files/create_and_add_policy_to_role.sh
+        {{ lookup('env', 'AWS_PROFILE') | default('default', true) }}
+        {{ aws_role_name }} {{ item }}
+      with_items: '{{ policy_document_fullpath_list }}'
+
+
+
+
+

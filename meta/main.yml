@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: nmaekawa
+  description: creates an aws iam instance-profile, and role, given managed policies list of documeents
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  galaxy_tags:
+  - system
+  - ubuntu
+  - debian
+  - aws
+  - iam
+dependencies: []
+
