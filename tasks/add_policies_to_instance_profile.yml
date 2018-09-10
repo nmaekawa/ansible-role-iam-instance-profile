@@ -1,0 +1,14 @@
+---
+    - name: create and add policies to instance profile
+      become: no
+      local_action: >
+        shell {{ role_path }}/files/create_and_add_policy_to_role.sh
+        {{ lookup('env', 'AWS_PROFILE') | default('default', true) }}
+        {{ aws_role_name }} {{ item }}
+      with_items: '{{ policy_document_fullpath_list }}'
+
+
+
+
+
+
