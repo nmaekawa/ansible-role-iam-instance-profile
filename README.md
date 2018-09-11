@@ -25,7 +25,10 @@ extension of filename _is_ `.json`). If policy name already exists, then it is
 used as is, without checking contents of existing policy.
 
 `instance_id_to_associate` instance-id of ec2 instance to be associated to
-instance profile being created. This is a separate step, see example below.
+instance profile being created. This is a separate step, see example below. If
+the instance is already associated to a profile (which name is not
+instance_profile_name), it fails; if is associated to a profile named
+instance_profile_name, it does nothing.
 
 
 example playbook
