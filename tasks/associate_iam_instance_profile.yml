@@ -1,0 +1,52 @@
+---
+    - name: check for instance profile associations
+      become: no
+      local_action: |
+        shell aws ec2 describe-iam-instance-profile-associations \
+        --filters Name=instance-id,Values={{ instance_id_to_associate }}
+      register: assoc_result
+
+    - set_fact:
+        instance_profile_assoc: "{{ assoc_result.stdout | from_json }}"
+
+    - name: debug profile associations
+      debug:
+          var: instance_profile_assoc
+
+    - set_fact:
+        has_instance_profile_name: "{{ instance_profile_assoc.IamInstanceProfileAssociations | length }}"
+
+    - debug:
+        var: has_instance_profile_name
+
+    - set_fact:
+        has_intended_instance_profile_name: "{% for ip in instance_profile_assoc.IamInstanceProfileAssociations %}\
+                {% if instance_profile_name in ip.IamInstanceProfile.Arn %}\
+                  {{ ip.IamInstanceProfile.Arn | trim | basename }}\
+                {% endif %}\
+            {% endfor %}"
+
+    - debug:
+        var: has_intended_instance_profile_name
+
+    - name: associate instance profile to instance
+      become: no
+      local_action: |
+          shell aws ec2 associate-iam-instance-profile \
+          --instance-id {{ instance_id_to_associate }} \
+          --iam-instance-profile Name={{ instance_profile_name }}
+      when: has_instance_profile_name == '0'
+
+    - name: fail if ec2 already has an instance profile
+      fail:
+          msg: "already associated to instance-profile {{ instance_profile_assoc.IamInstanceProfileAssociations[0].IamInstanceProfile.Arn }}"
+      when: has_instance_profile_name != '0' and has_intended_instance_profile_name == ''
+
+    - name: nothing to be done
+      debug:
+          msg: "nothing to do, instance already associated to profile {{ has_intended_instance_profile_name }}"
+      when: has_instance_profile_name != '0' and has_intended_instance_profile_name is defined
+
+
+
+
