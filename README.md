@@ -1,4 +1,4 @@
-cloudwatch
+iam instance profile
 =========
 Creates new aws iam instance profile, based on list of managed policies json
 documents. Instance-name must not yet exist, otherwise it's an error. Role-name
